@@ -13,14 +13,14 @@ export const getItemFromLocalStorage = (key) => {
   if (!key) {
     return console.log('can not store in LS');
   }
-  localStorage.getItem(key);
+  return localStorage.getItem(key);
 };
 
 export const removeItemFromLocalStorage = (key) => {
   if (!key) {
     return console.log('can not store in LS');
   }
-  localStorage.setItem(key);
+  localStorage.removeItem(key);
 };
 
 export const getFormBody = (params) => {

@@ -1,18 +1,31 @@
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../providers/AuthProvider';
-import { login as userLogin } from '../api';
+import { login as userLogin, register } from '../api';
 import {
+  getItemFromLocalStorage,
   LOCALSTORAGE_TOKEN_KEY,
   removeItemFromLocalStorage,
   setItemInLocalStorage,
 } from '../utils';
-
+import jwt from 'jwt-decode';
 export const useAuth = () => {
   return useContext(AuthContext);
 };
 export const UserProviderAuth = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const userToken = getItemFromLocalStorage(LOCALSTORAGE_TOKEN_KEY);
+
+    if (userToken) {
+      const user = jwt(userToken);
+
+      setUser(user);
+    }
+
+    setLoading(false);
+  }, []);
 
   const login = async (email, password) => {
     const response = await userLogin(email, password);
@@ -34,6 +47,21 @@ export const UserProviderAuth = () => {
     }
   };
 
+  const signup = async (name, email, password, confirmPassword) => {
+    const response = await register(name, email, password, confirmPassword);
+
+    if (response.success) {
+      return {
+        success: true,
+      };
+    } else {
+      return {
+        success: false,
+        message: response.message,
+      };
+    }
+  };
+
   const logout = () => {
     setUser(null);
     removeItemFromLocalStorage(LOCALSTORAGE_TOKEN_KEY);
@@ -43,5 +71,6 @@ export const UserProviderAuth = () => {
     login,
     logout,
     loading,
+    signup,
   };
 };
