@@ -11,12 +11,13 @@ const Signup = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [signingUp, setSigningUp] = useState('');
   const auth = useAuth();
+  // useNavigate is a hook that is used to navigate to a different page.
   const history = useNavigate();
-
+  console.log('history -- ', history);
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     setSigningUp(true);
-
+    // check if all fields are filled
     let error = false;
     if (!name || !email || !password || !confirmPassword) {
       toast('Please fill all the fields', {
@@ -25,7 +26,7 @@ const Signup = () => {
       });
       error = true;
     }
-
+    // check if passwords match
     if (password !== confirmPassword) {
       toast('Make sure password and confirm password matches', {
         appearance: 'error',
