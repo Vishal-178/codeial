@@ -1,8 +1,9 @@
 import { useContext, useEffect, useState } from 'react';
-import { AuthContext } from '../providers/AuthProvider';
+import { AuthContext, PostContext } from '../providers';
 import {
   editProfile,
   fetchUserFriends,
+  getPosts,
   login as userLogin,
   register,
 } from '../api';
@@ -130,5 +131,50 @@ export const UserProviderAuth = () => {
     signup,
     updateUser,
     updateUserFriends,
+  };
+};
+
+export const usePost = () => {
+  return useContext(PostContext);
+};
+export const UseProvidePosts = () => {
+  const [posts, setPosts] = useState(null);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    const fetchPosts = async () => {
+      const response = await getPosts();
+      console.log('response', response);
+      if (response.success) {
+        console.log('response.data.posts', response.data.posts);
+        setPosts(response.data.posts);
+      }
+      setLoading(false);
+    };
+
+    fetchPosts();
+  }, []);
+
+  const addPostToState = (post) => {
+    const newPosts = [post, ...posts];
+    setPosts(newPosts);
+  };
+  const addCommentToPost = (comment, postId) => {
+    const newPosts = posts.map((post) => {
+      if (post._id === postId) {
+        return {
+          ...post,
+          comments: [comment, ...post.comments],
+        };
+      }
+      return post;
+    });
+    setPosts(newPosts);
+  };
+
+  return {
+    data: posts,
+    loading,
+    addPostToState,
+    addCommentToPost,
   };
 };
